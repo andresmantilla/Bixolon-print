@@ -10,6 +10,7 @@ import org.apache.cordova.PluginResult.Status;
 import org.json.JSONArray;
 
 import android.bluetooth.BluetoothDevice;
+import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -20,6 +21,7 @@ public class BixolonPrint extends CordovaPlugin {
 
 	private CallbackContext callbackContext;
 	static BixolonPrinter mBixolonPrinter;
+	//static Context appContext; 
 	
 	/**
 	 * Executes the request.
@@ -46,12 +48,13 @@ public class BixolonPrint extends CordovaPlugin {
 	public boolean execute(String action, JSONArray args,
 			CallbackContext callbackContext) {
 		this.callbackContext = callbackContext;
+		//BixolonPrint.appContext = this.cordova.getActivity().getApplicationContext();
 		
-		PluginResult result = null;
-		result = new PluginResult(Status.OK, false);
-
+		LOG.i("am", "Bixolon Printer bluetooth");
 		mBixolonPrinter = new BixolonPrinter(this.cordova.getActivity().getApplicationContext(), mHandler, null);
+		LOG.i("am", "find Bixolon");
 		mBixolonPrinter.findBluetoothPrinters();
+		
 		//mBixolonPrinter.for
 		return true;
 	}
@@ -134,20 +137,21 @@ public class BixolonPrint extends CordovaPlugin {
 				
 			case BixolonPrinter.MESSAGE_BLUETOOTH_DEVICE_SET:
 				/*if (msg.obj == null) {
-					Toast.makeText(getApplicationContext(), "No paired device", Toast.LENGTH_SHORT).show();
+					Toast.makeText(BixolonPrint.appContext, "No paired device", Toast.LENGTH_SHORT).show();
 				} else {
-					DialogManager.showBluetoothDialog(MainActivity.this, (Set<BluetoothDevice>) msg.obj);
+					DialogManager.showBluetoothDialog(this.cordova.getActivity(), (Set<BluetoothDevice>) msg.obj);
 				}*/
 				LOG.i("am", ((Set<BluetoothDevice>) msg.obj).toString());
 				Set<BluetoothDevice> bluetoothDevicesSet = (Set<BluetoothDevice>) msg.obj;
 				for (BluetoothDevice device : bluetoothDevicesSet) {
 					LOG.i("am", device.getName());
-					if(device.getName().equals("SPP-R300")) {
-						mBixolonPrinter.connect(device.getAddress());
-						
-						break;
-					}
+					//if(device.getName().equals("SPP-R300")) {
+					//	mBixolonPrinter.connect(device.getAddress());
+					//	
+					//	break;
+					//}
 				}
+				mBixolonPrinter.connect((String) null);
 				return true;
 				
 			case BixolonPrinter.MESSAGE_PRINT_COMPLETE:
